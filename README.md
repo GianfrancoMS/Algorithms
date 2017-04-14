@@ -1,2 +1,5 @@
 <h1>Algorithms</h1>
-Solved problems for Algorithms' course in semester 2017-01 at UPC 
+<ul>
+<li>Solved problems for Algorithms' course in semester 2017-01 at college</li>
+<li>And some solved problems from Competitive Programing group</li>
+</ul>
