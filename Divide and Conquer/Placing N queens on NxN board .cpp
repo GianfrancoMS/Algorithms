@@ -63,7 +63,6 @@ void solveBoard(vector<char>&board, int position) {
         cout << endl;
         return;
     }
-
     for (auto i = 1; i <= board.size(); ++i) {
         printBoardState(board);
         if (validatePiece(board, i, position) ) {
