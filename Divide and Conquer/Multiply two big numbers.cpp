@@ -86,6 +86,7 @@ vector<int> multiply(vector<int> min, vector<int> max) {
     return sum;
 }
 
+/*
 int main(){
     vector<int>A=largeNumber(850);
     vector<int>B=largeNumber(150);
@@ -107,4 +108,4 @@ int main(){
 
     cout<<endl;
     return 0;
-}
+}*/
