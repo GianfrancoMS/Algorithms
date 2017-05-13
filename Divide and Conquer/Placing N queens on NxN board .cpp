@@ -72,8 +72,9 @@ void solveBoard(vector<char>&board, int position) {
     }
 }
 
+/*
 int main() {
-    vector<char>board {0,0,0,0};
+    vector<char>board {0,0,0,0,0};
     solveBoard(board,0);
     return 0;
-}
+}*/
