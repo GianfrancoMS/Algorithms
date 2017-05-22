@@ -40,11 +40,11 @@ public:
     }
 
     AdjacencyList getTranspose(){
-        AdjacencyList tranpose = AdjacencyList();
+        AdjacencyList transpose = AdjacencyList();
         for(auto i=list.begin();i!=list.end();++i)
             for(auto j=i->second.begin();j!=i->second.end();++j)
-                tranpose.insertEdge(*j,i->first);
-        return tranpose;
+                transpose.insertEdge(*j,i->first);
+        return transpose;
     }
 
     void printConnectedComponents(){
