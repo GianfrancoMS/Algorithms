@@ -1,10 +1,11 @@
 //
-// Created by GianfrancoMS on 5/13/2017.
+// Created by GianfrancoMS on 5/21/2017.
 //
 
 #include <iostream>
 #include <map>
 #include <set>
+#include <stack>
 
 using namespace std;
 
@@ -37,21 +38,49 @@ public:
             cout << endl;
         }
     }
-    
+
+    void topologicalSort(){
+        loadNodes();
+        stack<int>Stack;
+        for(auto i=list.begin();i!=list.end();++i)
+            if(!unvisitedNodes[i->first])
+                topologicalSortUtil(i->first,Stack);
+        while(!Stack.empty()){
+            cout<<Stack.top()<<" ";
+            Stack.pop();
+        }
+    }
+
 private:
     map < int, set<int> > list;
-};
 
+    map < int, bool > unvisitedNodes;
+
+    void loadNodes(){
+        if(!unvisitedNodes.empty())
+            unvisitedNodes.clear();
+        for(auto i=list.begin();i!=list.end();++i){
+            unvisitedNodes[i->first]=false;
+        }
+    }
+
+    void topologicalSortUtil(int v, stack<int>&Stack){
+        unvisitedNodes[v]=true;
+        for(auto i=list[v].begin();i!=list[v].end();++i)
+            if(!unvisitedNodes[*i])
+                topologicalSortUtil(*i,Stack);
+        Stack.push(v);
+    }
+};
 
 int main(){
     AdjacencyList list = AdjacencyList();
-    list.insertVertex(8);
     list.insertEdge(1, 2);
     list.insertEdge(1, 10);
     list.insertEdge(1, 3);
     list.insertEdge(2, 10);
+    list.insertEdge(2,1);
     list.printList();
-    cin.get();
+    list.topologicalSort();
     return 0;
 }
-

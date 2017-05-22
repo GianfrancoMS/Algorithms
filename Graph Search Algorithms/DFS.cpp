@@ -2,7 +2,6 @@
 // Created by GianfrancoMS on 5/13/2017.
 //
 
-/*
 #include <iostream>
 #include <vector>
 #include <map>
@@ -61,7 +60,7 @@ public:
 
     void dfsWithStack(int v){
         if(list.find(v)==list.end())
-            cout<<"Inorrect vertex"<<endl;
+            cout<<"Incorrect vertex"<<endl;
         else{
             loadNodes();
             dfsUtilWithStack(v);
@@ -123,4 +122,4 @@ int main(){
     cin.get();
     return 0;
 }
- */
+
