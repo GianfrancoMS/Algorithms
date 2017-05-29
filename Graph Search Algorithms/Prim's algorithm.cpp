@@ -1,6 +1,6 @@
 /*
 //
-// Created by GianfrancoMS on 5/13/2017.
+// Created by GianfrancoMS on 5/28/2017.
 //
 
 #include <iostream>
@@ -64,32 +64,27 @@ public:
             weights[edge] = weight;
     }
 
-    void ucs(int u, int v){
-        if(list.find(u)==list.end() || list.find(v)==list.end())
-            cout<<"Incorrect vertex";
-        else{
-            auto cmp=[](const pair<int,int>&a,const pair<int,int>&b){
-                return a.second > b.second;
-            };
-            auto tempWeights=weights;
-            priority_queue< pair<int,int>, vector<pair<int,int>>, decltype(cmp) > priorityQueue(cmp);
-            auto tempPair = make_pair(u,0);
-            priorityQueue.push(tempPair);
-            while(!priorityQueue.empty()){
-                auto current = priorityQueue.top();
-                priorityQueue.pop();
-                cout<<current.first<<" ";
-                if(current.first==v)
-                    break;
-                for(auto i=list[current.first].begin();i!=list[current.first].end();++i){
-                    auto edge = make_pair(current.first,*i);
-                    tempWeights[edge]+=current.second;
-                    priorityQueue.push(make_pair(*i,tempWeights[edge]));
+    void prim() {
+        if (list.size() <= 1)
+            return;
+        loadUnvisitedNodes();
+        priority_queue < pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
+        int src = list.begin()->first;
+
+        while (!pq.empty())
+        {
+            int u = pq.top().second;
+            pq.pop();
+            unvisitedNodes[u] = true;
+            for (auto i = list[u].begin(); i != list[u].end(); ++i) {
+                int v = (*i);
+                int weight = weights[make_pair(u, v)];
+                if (!unvisitedNodes[v] && ) {
+
                 }
             }
         }
     }
-
 
 private:
 
@@ -104,16 +99,13 @@ private:
             unvisitedNodes[i->first] = false;
         }
     }
-
 };
 
 int main() {
     AdjacencyList list = AdjacencyList();
-    list.insertEdge(1, 2, 10);
-    list.insertEdge(1, 3, 8);
-    list.insertEdge(2, 4, 9);
-    list.insertEdge(3, 4, 6);
-    list.ucs(1,4);
+    list.insertBidirectionalEdge(1, 2);
+    list.insertBidirectionalEdge(2, 5);
+    list.insertBidirectionalEdge(5, 4);
     list.printList();
     list.printWeigths();
     cin.get();
