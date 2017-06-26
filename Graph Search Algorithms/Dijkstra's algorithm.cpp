@@ -58,36 +58,43 @@ public:
             weights[edge] = weight;
     }
 
-    void ucs(int u, int v){
-        if(list.find(u)==list.end() || list.find(v)==list.end())
-            cout<<"Incorrect vertex";
-        else{
-            auto cmp=[](const pair<int,int>&a,const pair<int,int>&b){
+    void dijkstra(int v) {
+        if (list.find(v) == list.end())
+            cout << "Incorrect vertex. Try again";
+        else {
+            auto cmp = [](const pair<int, int>&a, const pair<int, int>&b) {
                 return a.second > b.second;
             };
-            auto tempWeights=weights;
-            priority_queue< pair<int,int>, vector<pair<int,int>>, decltype(cmp) > priorityQueue(cmp);
-            auto tempPair = make_pair(u,0);
-            priorityQueue.push(tempPair);
-            while(!priorityQueue.empty()){
-                auto current = priorityQueue.top();
-                priorityQueue.pop();
-                cout<<current.first<<" ";
-                if(current.first==v)
-                    break;
-                for(auto i=list[current.first].begin();i!=list[current.first].end();++i){
-                    auto edge = make_pair(current.first,*i);
-                    tempWeights[edge]+=current.second;
-                    priorityQueue.push(make_pair(*i,tempWeights[edge]));
-                }
+            map<int, int>distances;
+            for (auto node : list)
+                distances[node.first] = 0x3f3f3f3f;
+            distances[v] = 0;
+            priority_queue< pair<int, int>, vector<pair<int, int>>, decltype(cmp) > pq(cmp);
+            auto tempPair = make_pair(v, distances[v]);
+            pq.push(tempPair);
+            while (!pq.empty()) {
+                auto current = pq.top();
+                pq.pop();
+                int u = current.first;
+                int d = current.second;
+                if (distances[u] >=d)
+                    for (auto adjacent : list[u]) {
+                        int v = adjacent;
+                        int weight = weights[make_pair(u, v)];
+                        if (distances[u] + weight < distances[v]) {
+                            distances[v] = distances[u] + weight;
+                            pq.push(make_pair(v,distances[v]));
+                        }
+                    }
             }
+            for (auto value : distances)
+                cout << value.first << " : " << value.second << endl;
         }
     }
 
 private:
-
     map < int, set<int> > list;
-    map < pair<int, int>, int > weights;
+    map< pair<int, int>, int> weights;
     map < int, bool > unvisitedNodes;
 
     void loadUnvisitedNodes() {
@@ -106,9 +113,10 @@ int main() {
     list.insertEdge(1, 3, 8);
     list.insertEdge(2, 4, 9);
     list.insertEdge(3, 4, 6);
-    list.ucs(1,4);
+    list.dijkstra(1);
     list.printList();
     list.printWeigths();
     cin.get();
     return 0;
-}*/
+}
+*/

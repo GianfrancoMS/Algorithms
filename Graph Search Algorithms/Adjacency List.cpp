@@ -1,8 +1,3 @@
-/*
-//
-// Created by GianfrancoMS on 5/13/2017.
-//
-
 #include <iostream>
 #include <map>
 #include <set>
@@ -43,7 +38,7 @@ private:
     map < int, set<int> > list;
 };
 
-
+/*
 int main(){
     AdjacencyList list = AdjacencyList();
     list.insertVertex(8);
@@ -55,5 +50,4 @@ int main(){
     cin.get();
     return 0;
 }
-
 */

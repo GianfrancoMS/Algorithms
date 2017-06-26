@@ -1,8 +1,3 @@
-/*
-//
-// Created by GianfrancoMS on 5/13/2017.
-//
-
 #include <iostream>
 #include <vector>
 #include <map>
@@ -73,7 +68,6 @@ public:
 
 private:
     map < int, set<int> >list;
-
     map < int, bool > unvisitedNodes;
 
     void loadUnvisitedNodes(){
@@ -86,6 +80,7 @@ private:
 
 };
 
+/*
 int main(){
     AdjacencyList list = AdjacencyList();
     list.insertVertex(8);

@@ -1,8 +1,3 @@
-/*
-//
-// Created by GianfrancoMS on 5/28/2017.
-//
-
 #include <iostream>
 #include <map>
 #include <set>
@@ -64,25 +59,41 @@ public:
             weights[edge] = weight;
     }
 
-    void prim() {
-        if (list.size() <= 1)
-            return;
-        loadUnvisitedNodes();
-        priority_queue < pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
-        int src = list.begin()->first;
-
-        while (!pq.empty())
-        {
-            int u = pq.top().second;
-            pq.pop();
-            unvisitedNodes[u] = true;
-            for (auto i = list[u].begin(); i != list[u].end(); ++i) {
-                int v = (*i);
-                int weight = weights[make_pair(u, v)];
-                if (!unvisitedNodes[v] && ) {
-
-                }
+    void prim(int v) {
+        if (list.find(v) == list.end())
+            cout << "Incorrect vertex. Try again";
+        else {
+            auto cmp = [](const pair<int, int> &a, const pair<int, int> &b) {
+                return a.second > b.second;
+            };
+            map<int, int> distances;
+            for (auto node : list)
+                distances[node.first] = 0x3f3f3f3f;
+            distances[v] = 0;
+            loadUnvisitedNodes();
+            priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> pq(cmp);
+            auto tempPair = make_pair(v, distances[v]);
+            pq.push(tempPair);
+            while (!pq.empty()) {
+                auto current = pq.top();
+                pq.pop();
+                int u = current.first;
+                int d = current.second;
+                unvisitedNodes[u] = true;
+                if (distances[u] >= d)
+                    for (auto adjacent : list[u]) {
+                        if (unvisitedNodes[adjacent])
+                            continue;
+                        int v = adjacent;
+                        int weight = weights[make_pair(u, v)];
+                        if (weight < distances[v]) {
+                            distances[v] = weight;
+                            pq.push(make_pair(v, distances[v]));
+                        }
+                    }
             }
+            for (auto value : distances)
+                cout << value.first << " : " << value.second << endl;
         }
     }
 
@@ -101,6 +112,7 @@ private:
     }
 };
 
+/*
 int main() {
     AdjacencyList list = AdjacencyList();
     list.insertBidirectionalEdge(1, 2);
@@ -110,4 +122,5 @@ int main() {
     list.printWeigths();
     cin.get();
     return 0;
-}*/
+}
+*/

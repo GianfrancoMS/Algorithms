@@ -1,8 +1,3 @@
-/*
-//
-// Created by GianfrancoMS on 5/21/2017.
-//
-
 #include <iostream>
 #include <map>
 #include <set>
@@ -67,8 +62,8 @@ public:
     }
 
 private:
-    map < int, set<int> > list;
 
+    map < int, set<int> > list;
     map < int, bool > unvisitedNodes;
 
     void loadNodes(){
@@ -96,6 +91,7 @@ private:
     }
 };
 
+/*
 int main(){
     AdjacencyList list = AdjacencyList();
     list.insertEdge(1, 2);
@@ -106,7 +102,4 @@ int main(){
     list.printList();
     list.printConnectedComponents();
     return 0;
-}
-
-
-*/
+}*/

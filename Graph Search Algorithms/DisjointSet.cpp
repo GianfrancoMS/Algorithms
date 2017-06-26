@@ -1,8 +1,3 @@
-/*
-//
-// Created by GianfrancoMS on 5/28/2017.
-//
-
 #include <iostream>
 #include <map>
 #include <set>
@@ -12,6 +7,7 @@ using namespace std;
 
 class DisjointSet{
 public:
+
     DisjointSet()= default;
 
     ~DisjointSet()= default;
@@ -34,7 +30,7 @@ public:
     }
 
     int find(int element){
-        //if v doesn't exist in map, return v
+        //if element doesn't exist in map, return the same element
         if(!exists(element))
             return element;
         else
@@ -76,17 +72,17 @@ public:
 
 private:
     map<int,int>rank;
-
     //element -> parent
     map<int,int>parent;
 
     int _find(int element){
         if(element!=parent[element])
-            parent[element]=find(parent[element]);
+            parent[element]= _find(parent[element]);
         return parent[element];
     }
 };
 
+/*
 int main(){
     DisjointSet disjointSet=DisjointSet({1,2,4,5});
     disjointSet._union(1,4);
@@ -98,4 +94,5 @@ int main(){
     cout<<"Ranks: "<<endl;
     disjointSet.printRanks();
     return 0;
-}*/
+}
+*/
