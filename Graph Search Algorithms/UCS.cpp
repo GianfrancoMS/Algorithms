@@ -2,7 +2,6 @@
 #include <map>
 #include <set>
 #include <queue>
-#include <functional>
 
 using namespace std;
 
@@ -101,6 +100,7 @@ private:
 
 /*
 int main() {
+
     AdjacencyList list = AdjacencyList();
     list.insertEdge(1, 2, 10);
     list.insertEdge(1, 3, 8);
