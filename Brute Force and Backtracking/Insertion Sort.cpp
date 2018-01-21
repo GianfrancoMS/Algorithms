@@ -3,24 +3,23 @@
 
 using namespace std;
 
-void insertionSort(vector<int>&numbers){
-    for(int i=1;i<numbers.size()-1;++i){
-        int temp=numbers[i];
-        int k=i-1;
-        while(k>=0 && numbers[k] > temp) {
-            numbers[k+1]=numbers[k];
-            --k;
+void insertionSort(vector<int> &numbers) {
+    for (int i = 1; i < numbers.size(); ++i) {
+        int key = numbers[i];
+        int j = i - 1;
+        while (j >= 0 && numbers[j] > key) {
+            numbers[j + 1] = numbers[j];
+            --j;
         }
-        numbers[k+1]=temp;
+        numbers[j + 1] = key;
     }
 }
 
-/*
-int main(){
-    vector<int>numbers{1,3,4,-2,1,0};
+int main() {
+    vector<int> numbers{1, 3, 4, -2, 1, 0};
     insertionSort(numbers);
-    for(auto element: numbers)
-        cout<<element<<" ";
-    cout<<endl;
+    for (auto element: numbers)
+        cout << element << " ";
+    cout << endl;
     return 0;
-}*/
+}
