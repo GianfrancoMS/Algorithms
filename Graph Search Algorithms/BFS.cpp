@@ -13,53 +13,48 @@ public:
 
     ~AdjacencyList() = default;
 
-    void insertVertex(int v) {
-        if (list.find(v) == list.end())
-            list[v]=set<int>{};
+    void insertVertex(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            vertices[vertex] = set < int > {};
     }
 
     void insertEdge(int u, int v) {
-        if (list.find(u) != list.end())
-            list[u].insert(v);
+        if (vertices.find(u) != vertices.end())
+            vertices[u].insert(v);
         else
-            list[u] = set<int>{ v };
+            vertices[u] = set < int > {v};
         insertVertex(v);
     }
 
     void printList() {
-        cout << endl;
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            cout << i->first << ": ";
-            for (auto j = i->second.begin(); j != i->second.end(); ++j)
-                cout << *j << " ";
+        for (auto vertex: vertices) {
+            cout << vertex.first << ": ";
+            for (auto adjacent: vertex.second)
+                cout << adjacent << " ";
             cout << endl;
         }
     }
 
-    void printUnvisitedNodes(){
-        loadUnvisitedNodes();
-        cout << endl;
-        for (auto i = unvisitedNodes.begin(); i != unvisitedNodes.end(); ++i)
-            cout << i->first << " ";
-        cout<<endl;
-    }
+    void bfs(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            cout << "Vertex v doesnt exist in the graph";
+        else {
+            loadUnvisitedVertices();
 
-    void bfs(int v){
-        if(list.find(v)==list.end())
-            cout<<"Incorrect vertex";
-        else{
-            loadUnvisitedNodes();
-            queue<int>myQueue;
-            unvisitedNodes[v]=true;
-            myQueue.push(v);
-            while(!myQueue.empty()){
-                v = myQueue.front();
-                cout<<v<<" ";
-                myQueue.pop();
-                for(auto i=list[v].begin();i!=list[v].end();++i){
-                    if(!unvisitedNodes[*i]){
-                        unvisitedNodes[*i]=true;
-                        myQueue.push(*i);
+            queue<int> verticesQueue;
+            unvisitedVertices[vertex] = true;
+            verticesQueue.push(vertex);
+
+            while (!verticesQueue.empty()) {
+                auto currentVertex = verticesQueue.front();
+                cout << currentVertex << " ";
+                verticesQueue.pop();
+
+                auto adjacentVertices = vertices[currentVertex];
+                for (auto adjacent: adjacentVertices) {
+                    if (!unvisitedVertices[adjacent]) {
+                        unvisitedVertices[adjacent] = true;
+                        verticesQueue.push(adjacent);
                     }
                 }
             }
@@ -67,30 +62,30 @@ public:
     }
 
 private:
-    map < int, set<int> >list;
-    map < int, bool > unvisitedNodes;
 
-    void loadUnvisitedNodes(){
-        if(!unvisitedNodes.empty())
-            unvisitedNodes.clear();
-        for(auto i=list.begin();i!=list.end();++i){
-            unvisitedNodes[i->first]=false;
+    map<int, set<int> > vertices;
+
+    map<int, bool> unvisitedVertices;
+
+    void loadUnvisitedVertices() {
+        if (!unvisitedVertices.empty())
+            unvisitedVertices.clear();
+        for (auto vertex: vertices) {
+            unvisitedVertices[vertex.first] = false;
         }
     }
 
 };
 
-/*
-int main(){
+int main() {
     AdjacencyList list = AdjacencyList();
     list.insertVertex(8);
     list.insertEdge(1, 2);
     list.insertEdge(1, 10);
     list.insertEdge(1, 3);
     list.insertEdge(2, 10);
-    list.insertEdge(2,1);
+    list.insertEdge(2, 1);
     list.printList();
     list.bfs(2);
-    cin.get();
     return 0;
-}*/
+}

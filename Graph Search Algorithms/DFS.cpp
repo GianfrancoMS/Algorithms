@@ -3,7 +3,6 @@
 #include <map>
 #include <set>
 #include <stack>
-#include <queue>
 
 using namespace std;
 
@@ -14,109 +13,106 @@ public:
 
     ~AdjacencyList() = default;
 
-    void insertVertex(int v) {
-        if (list.find(v) == list.end())
-            list[v]=set<int>{};
+    void insertVertex(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            vertices[vertex] = set < int > {};
     }
 
     void insertEdge(int u, int v) {
-        if (list.find(u) != list.end())
-            list[u].insert(v);
+        if (vertices.find(u) != vertices.end())
+            vertices[u].insert(v);
         else
-            list[u] = set<int>{ v };
+            vertices[u] = set < int > {v};
         insertVertex(v);
     }
 
     void printList() {
-        cout << endl;
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            cout << i->first << ": ";
-            for (auto j = i->second.begin(); j != i->second.end(); ++j)
-                cout << *j << " ";
+        for (auto vertex: vertices) {
+            cout << vertex.first << ": ";
+            for (auto adjacent: vertex.second)
+                cout << adjacent << " ";
             cout << endl;
         }
     }
 
-    void printUnvisitedNodes(){
-        loadNodes();
-        cout << endl;
-        for (auto i = unvisitedNodes.begin(); i != unvisitedNodes.end(); ++i)
-            cout << i->first << " ";
-        cout<<endl;
-    }
-
-    void dfs(int v){
-        if(list.find(v)==list.end())
-            cout<<"Inorrect vertex"<<endl;
-        else{
-            loadNodes();
-            dfsUtil(v);
+    void dfs(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            cout << "Vertex v doesnt exist in the graph";
+        else {
+            loadUnvisitedVertices();
+            dfsUtil(vertex);
         }
     }
 
-    void dfsWithStack(int v){
-        if(list.find(v)==list.end())
-            cout<<"Incorrect vertex"<<endl;
-        else{
-            loadNodes();
-            dfsUtilWithStack(v);
+    void dfsWithStack(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            cout << "Vertex v doesnt exist in the graph";
+        else {
+            loadUnvisitedVertices();
+            dfsUtilWithStack(vertex);
         }
     }
 
 private:
-    map < int, set<int> >list;
-    map < int, bool > unvisitedNodes;
 
-    void dfsUtil(int v){
-        unvisitedNodes[v]=true;
-        cout<<v<<" ";
-        for(auto i=list[v].begin(); i!=list[v].end();++i){
-            if(!unvisitedNodes[*i])
-                dfsUtil(*i);
+    map<int, set<int> > vertices;
+
+    map<int, bool> unvisitedVertices;
+
+    void loadUnvisitedVertices() {
+        if (!unvisitedVertices.empty())
+            unvisitedVertices.clear();
+        for (auto vertex: vertices) {
+            unvisitedVertices[vertex.first] = false;
         }
     }
 
-    void dfsUtilWithStack(int v){
-        stack<int>stack;
-        stack.push(v);
-        while(!stack.empty()){
-            v=stack.top();
-            stack.pop();
-            if(!unvisitedNodes[v]){
-                cout<<v<<" ";
-                unvisitedNodes[v]=true;
-            }
-            for(auto i=list[v].rbegin();i!=list[v].rend();++i){
-                if(!unvisitedNodes[*i])
-                    stack.push(*i);
-            }
+    void dfsUtil(int vertex) {
+        unvisitedVertices[vertex] = true;
+        cout << vertex << " ";
+
+        auto adjacentVertices = vertices[vertex];
+        for (auto adjacent: adjacentVertices) {
+            if (!unvisitedVertices[adjacent])
+                dfsUtil(adjacent);
         }
     }
 
-    void loadNodes(){
-        if(!unvisitedNodes.empty())
-            unvisitedNodes.clear();
-        for(auto i=list.begin();i!=list.end();++i){
-            unvisitedNodes[i->first]=false;
+    void dfsUtilWithStack(int vertex) {
+        stack<int> verticesStack;
+        verticesStack.push(vertex);
+
+        while (!verticesStack.empty()) {
+            auto currentVertex = verticesStack.top();
+            verticesStack.pop();
+
+            if (!unvisitedVertices[currentVertex]) {
+                cout << currentVertex << " ";
+                unvisitedVertices[currentVertex] = true;
+            }
+
+            auto adjacentVertices = vertices[currentVertex];
+            for (auto adjacent = adjacentVertices.rbegin(); adjacent != adjacentVertices.rend(); ++adjacent) {
+                if (!unvisitedVertices[*adjacent])
+                    verticesStack.push(*adjacent);
+            }
         }
     }
 
 };
 
-/*
-int main(){
+int main() {
     AdjacencyList list = AdjacencyList();
     list.insertVertex(8);
     list.insertEdge(1, 2);
     list.insertEdge(1, 10);
     list.insertEdge(1, 3);
     list.insertEdge(2, 10);
-    list.insertEdge(2,1);
+    list.insertEdge(2, 1);
     list.printList();
     list.dfs(1);
-    cout<<endl;
+    cout << endl;
     list.dfsWithStack(1);
-    cin.get();
     return 0;
-}*/
+}
 

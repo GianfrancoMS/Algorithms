@@ -11,35 +11,35 @@ public:
 
     ~AdjacencyList() = default;
 
-    void insertVertex(int v) {
-        if (list.find(v) == list.end())
-            list[v]=set<int>{};
+    void insertVertex(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            vertices[vertex] = set < int > {};
     }
 
     void insertEdge(int u, int v) {
-        if (list.find(u) != list.end())
-            list[u].insert(v);
+        if (vertices.find(u) != vertices.end())
+            vertices[u].insert(v);
         else
-            list[u] = set<int>{ v };
+            vertices[u] = set < int > {v};
         insertVertex(v);
     }
 
     void printList() {
-        cout << endl;
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            cout << i->first << ": ";
-            for (auto j = i->second.begin(); j != i->second.end(); ++j)
-                cout << *j << " ";
+        for (auto vertex: vertices) {
+            cout << vertex.first << ": ";
+            for (auto adjacent: vertex.second)
+                cout << adjacent << " ";
             cout << endl;
         }
     }
-    
+
 private:
-    map < int, set<int> > list;
+
+    map<int, set<int> > vertices;
+
 };
 
-/*
-int main(){
+int main() {
     AdjacencyList list = AdjacencyList();
     list.insertVertex(8);
     list.insertEdge(1, 2);
@@ -47,7 +47,6 @@ int main(){
     list.insertEdge(1, 3);
     list.insertEdge(2, 10);
     list.printList();
-    cin.get();
     return 0;
 }
-*/
+
