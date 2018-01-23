@@ -12,19 +12,18 @@ public:
 
     ~AdjacencyList() = default;
 
-    void insertVertex(int v) {
-        if (list.find(v) == list.end())
-            list[v] = set<int>{};
+    void insertVertex(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            vertices[vertex] = set < int > {};
     }
 
     void insertEdge(int u, int v, int weight = 1) {
-        if (list.find(u) != list.end()) {
-            list[u].insert(v);
+        if (vertices.find(u) != vertices.end()) {
+            vertices[u].insert(v);
             if (weights.find(make_pair(u, v)) == weights.end())
                 weights[make_pair(u, v)] = weight;
-        }
-        else {
-            list[u] = set<int>{ v };
+        } else {
+            vertices[u] = set < int > {v};
             weights[make_pair(u, v)] = weight;
         }
         insertVertex(v);
@@ -36,48 +35,54 @@ public:
     }
 
     void printList() {
-        cout << endl;
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            cout << i->first << ": ";
-            for (auto j = i->second.begin(); j != i->second.end(); ++j)
-                cout << *j << " ";
+        for (auto vertex: vertices) {
+            cout << vertex.first << ": ";
+            for (auto adjacent: vertex.second)
+                cout << adjacent << " ";
             cout << endl;
         }
     }
 
-    void printWeigths() {
-        for (auto i = weights.begin(); i != weights.end(); ++i) {
-            cout << i->first.first << " -> " << i->first.second << " = " << i->second << endl;
+    void printWeights() {
+        for (auto edge: weights) {
+            cout << edge.first.first << " -> " << edge.first.second << " = " << edge.second << endl;
         }
     }
 
-    void updateWeigth(int u, int v, int weight) {
+    void updateWeight(int u, int v, int weight) {
         auto edge = make_pair(u, v);
         if (weights.find(edge) != weights.end())
             weights[edge] = weight;
     }
 
-    void ucs(int u, int v){
-        if(list.find(u)==list.end() || list.find(v)==list.end())
-            cout<<"Incorrect vertex";
-        else{
-            auto cmp=[](const pair<int,int>&a,const pair<int,int>&b){
+    void ucs(int u, int v) {
+        if (vertices.find(u) == vertices.end() || vertices.find(v) == vertices.end())
+            cout << "Invalid input";
+        else {
+            auto cmp = [](const pair<int, int> &a, const pair<int, int> &b) {
                 return a.second > b.second;
             };
-            auto tempWeights=weights;
-            priority_queue< pair<int,int>, vector<pair<int,int>>, decltype(cmp) > priorityQueue(cmp);
-            auto tempPair = make_pair(u,0);
-            priorityQueue.push(tempPair);
-            while(!priorityQueue.empty()){
-                auto current = priorityQueue.top();
+
+            auto tempWeights = weights;
+
+            priority_queue < pair < int, int >, vector < pair < int, int >>, decltype(cmp) > priorityQueue(cmp);
+            auto firstPair = make_pair(u, 0);
+            priorityQueue.push(firstPair);
+
+            while (!priorityQueue.empty()) {
+                auto currentPair = priorityQueue.top();
                 priorityQueue.pop();
-                cout<<current.first<<" ";
-                if(current.first==v)
+
+                cout << currentPair.first << " ";
+
+                if (currentPair.first == v)
                     break;
-                for(auto i=list[current.first].begin();i!=list[current.first].end();++i){
-                    auto edge = make_pair(current.first,*i);
-                    tempWeights[edge]+=current.second;
-                    priorityQueue.push(make_pair(*i,tempWeights[edge]));
+
+                auto adjacentVertices = vertices[currentPair.first];
+                for (auto adjacent: adjacentVertices) {
+                    auto edge = make_pair(currentPair.first, adjacent);
+                    tempWeights[edge] += currentPair.second;
+                    priorityQueue.push(make_pair(adjacent, tempWeights[edge]));
                 }
             }
         }
@@ -85,20 +90,21 @@ public:
 
 private:
 
-    map < int, set<int> > list;
-    map < pair<int, int>, int > weights;
-    map < int, bool > unvisitedNodes;
+    map<int, set<int> > vertices;
 
-    void loadUnvisitedNodes() {
-        if (!unvisitedNodes.empty())
-            unvisitedNodes.clear();
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            unvisitedNodes[i->first] = false;
+    map<int, bool> unvisitedVertices;
+
+    map<pair<int, int>, int> weights;
+
+    void loadUnvisitedVertices() {
+        if (!unvisitedVertices.empty())
+            unvisitedVertices.clear();
+        for (auto vertex: vertices) {
+            unvisitedVertices[vertex.first] = false;
         }
     }
 };
 
-/*
 int main() {
 
     AdjacencyList list = AdjacencyList();
@@ -106,9 +112,6 @@ int main() {
     list.insertEdge(1, 3, 8);
     list.insertEdge(2, 4, 9);
     list.insertEdge(3, 4, 6);
-    list.ucs(1,4);
-    list.printList();
-    list.printWeigths();
-    cin.get();
+    list.ucs(1, 4);
     return 0;
-}*/
+}
