@@ -82,7 +82,6 @@ int main() {
     list.insertEdge(1, 3);
     list.insertEdge(2, 10);
     list.insertEdge(2, 1);
-    list.printList();
     list.topologicalSort();
     return 0;
 }
