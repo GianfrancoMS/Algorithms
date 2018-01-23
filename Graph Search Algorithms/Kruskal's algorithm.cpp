@@ -8,15 +8,16 @@ using namespace std;
 
 class DisjointSet {
 public:
+
     DisjointSet() = default;
 
     ~DisjointSet() = default;
 
-    DisjointSet(const vector<int>&initializer) {
-        for (auto i = initializer.begin(); i != initializer.end(); ++i) {
-            if (parent.find(*i) == parent.end()) {
-                parent[*i] = *i;
-                rank[*i] = 0;
+    DisjointSet(const vector<int> &initializer) {
+        for (auto element: initializer) {
+            if (parent.find(element) == parent.end()) {
+                parent[element] = element;
+                rank[element] = 0;
             }
         }
     }
@@ -39,18 +40,28 @@ public:
 
     void _union(int x, int y) {
         if (exists(x) && exists(y)) {
-            int xRoot = find(x);
-            int yRoot = find(y);
-            if (xRoot == yRoot)
+            int rootX = find(x);
+            int rootY = find(y);
+            if (rootX == rootY)
                 return;
-            if (rank[xRoot] > rank[yRoot])
-                parent[yRoot] = xRoot;
+            if (rank[rootX] > rank[rootY])
+                parent[rootY] = rootX;
             else {
-                parent[xRoot] = yRoot;
-                if (rank[xRoot] == rank[yRoot])
-                    rank[yRoot]++;
+                parent[rootX] = rootY;
+                if (rank[rootX] == rank[rootY])
+                    rank[rootY]++;
             }
         }
+    }
+
+    void printParents() {
+        for (auto element: parent)
+            cout << element.first << " : " << element.second << endl;
+    }
+
+    void printRanks() {
+        for (auto element: rank)
+            cout << element.first << " : " << element.second << endl;
     }
 
     void insertElement(int element) {
@@ -61,15 +72,18 @@ public:
     }
 
 private:
-    map<int, int>rank;
+
+    map<int, int> rank;
+
     //element -> parent
-    map<int, int>parent;
+    map<int, int> parent;
 
     int _find(int element) {
         if (element != parent[element])
             parent[element] = _find(parent[element]);
         return parent[element];
     }
+
 };
 
 class AdjacencyList {
@@ -79,41 +93,44 @@ public:
 
     ~AdjacencyList() = default;
 
-    void insertVertex(int v) {
-        if (list.find(v) == list.end())
-            list[v] = set<int>{};
+    void insertVertex(int vertex) {
+        if (vertices.find(vertex) == vertices.end())
+            vertices[vertex] = set < int > {};
     }
 
     void insertEdge(int u, int v, int weight = 1) {
-        if (list.find(u) != list.end()) {
-            list[u].insert(v);
+        if (vertices.find(u) != vertices.end()) {
+            vertices[u].insert(v);
             if (weights.find(make_pair(u, v)) == weights.end())
                 weights[make_pair(u, v)] = weight;
-        }
-        else {
-            list[u] = set<int>{ v };
+        } else {
+            vertices[u] = set < int > {v};
             weights[make_pair(u, v)] = weight;
         }
         insertVertex(v);
     }
 
+    void insertBidirectionalEdge(int u, int v, int weight = 1) {
+        insertEdge(u, v, weight);
+        insertEdge(v, u, weight);
+    }
+
     void printList() {
-        cout << endl;
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            cout << i->first << ": ";
-            for (auto j = i->second.begin(); j != i->second.end(); ++j)
-                cout << *j << " ";
+        for (auto vertex: vertices) {
+            cout << vertex.first << ": ";
+            for (auto adjacent: vertex.second)
+                cout << adjacent << " ";
             cout << endl;
         }
     }
 
-    void printWeigths() {
-        for (auto i = weights.begin(); i != weights.end(); ++i) {
-            cout << i->first.first << " -> " << i->first.second << " = " << i->second << endl;
+    void printWeights() {
+        for (auto edge: weights) {
+            cout << edge.first.first << " -> " << edge.first.second << " = " << edge.second << endl;
         }
     }
 
-    void updateWeigth(int u, int v, int weight) {
+    void updateWeight(int u, int v, int weight) {
         auto edge = make_pair(u, v);
         if (weights.find(edge) != weights.end())
             weights[edge] = weight;
@@ -121,41 +138,51 @@ public:
 
     void kruskal() {
         int result = 0;
-        set < pair<int, pair<int, int > > > edges;
+
+        //<weight, pair<u,v>
+        set < pair < int, pair < int, int > > > edges;
         for (auto edge : weights)
-            edges.insert(make_pair(edge.second,edge.first));
-        DisjointSet dset = DisjointSet();
-        for (auto temp : list)
-            dset.insertElement(temp.first);
+            edges.insert(make_pair(edge.second, edge.first));
+
+        DisjointSet disjointSet = DisjointSet();
+        for (auto vertex : vertices)
+            disjointSet.insertElement(vertex.first);
+
         for (auto edge : edges) {
             int u = edge.second.first;
             int v = edge.second.second;
-            int set_u = dset.find(u);
-            int set_v = dset.find(v);
-            if (set_u != set_v) {
+
+            int setU = disjointSet.find(u);
+            int setV = disjointSet.find(v);
+            if (setU != setV) {
                 cout << u << " - " << v << endl;
                 result += edge.first;
-                dset._union(set_u, set_v);
+                disjointSet._union(setU, setV);
             }
         }
+
         cout << "Weight of MST: " << result << endl;
     }
 
 private:
 
-    map < int, set<int> > list;
-    map < pair<int, int>, int > weights;
-    map < int, bool > unvisitedNodes;
-    void loadUnvisitedNodes() {
-        if (!unvisitedNodes.empty())
-            unvisitedNodes.clear();
-        for (auto i = list.begin(); i != list.end(); ++i) {
-            unvisitedNodes[i->first] = false;
+    map<int, set<int> > vertices;
+
+    map<int, bool> unvisitedVertices;
+
+    map<pair<int, int>, int> weights;
+
+    void loadUnvisitedVertices() {
+        if (!unvisitedVertices.empty())
+            unvisitedVertices.clear();
+        for (auto vertex: vertices) {
+            unvisitedVertices[vertex.first] = false;
         }
     }
+
 };
 
-/*
+
 int main() {
     AdjacencyList list = AdjacencyList();
     list.insertEdge(1, 3, 3);
@@ -168,10 +195,7 @@ int main() {
     list.insertEdge(4, 5, 5);
     list.insertEdge(4, 6, 6);
     list.insertEdge(6, 5, 4);
-    list.printList();
-    list.printWeigths();
     list.kruskal();
-    cin.get();
     return 0;
 }
-*/
+
