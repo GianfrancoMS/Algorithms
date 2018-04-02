@@ -9,6 +9,7 @@
 using namespace std;
 using namespace std::chrono;
 
+
 class AdjacencyList {
 public:
 
@@ -59,51 +60,64 @@ public:
             weights[edge] = weight;
     }
 
-    void dijkstra(int vertex) {
-        if (vertices.find(vertex) == vertices.end())
+    void aStar(int vertexBegin, int vertexEnd, map<int, int> heuristic) {
+        if (vertices.find(vertexBegin) == vertices.end())
             cout << "Vertex v doesnt exist in the graph";
         else {
             auto cmp = [](const pair<int, int> &a, const pair<int, int> &b) {
                 return a.second > b.second;
             };
 
-            map<int, int> distances;
+            loadUnvisitedVertices();
+
+            map<int, int> gScore;
+            map<int, int> fScore;
             map<int, int> parents;
 
             for (auto vertex : vertices) {
-                distances[vertex.first] = numeric_limits<int>::max();
+                gScore[vertex.first] = numeric_limits<int>::max();
+                fScore[vertex.first] = numeric_limits<int>::max();
                 parents[vertex.first] = -1;
             }
 
-            distances[vertex] = 0;
+            gScore[vertexBegin] = 0;
+            fScore[vertexBegin] = heuristic[vertexBegin];
 
             priority_queue<pair<int, int>, vector<pair<int, int >>, decltype(cmp)> priorityQueue(cmp);
 
-            auto firstPair = make_pair(vertex, 0);
+            auto firstPair = make_pair(vertexBegin, fScore[vertexBegin]);
             priorityQueue.push(firstPair);
 
             while (!priorityQueue.empty()) {
                 auto currentPair = priorityQueue.top();
-                priorityQueue.pop();
 
                 int currentVertex = currentPair.first;
                 int currentDistance = currentPair.second;
 
-                if (distances[currentVertex] >= currentDistance) {
-                    auto adjacentVertices = vertices[currentVertex];
-                    for (auto adjacent : adjacentVertices) {
-                        int currentWeight = weights[make_pair(currentVertex, adjacent)];
+                if (currentVertex == vertexEnd)
+                    break;
 
-                        if (distances[currentVertex] + currentWeight < distances[adjacent]) {
-                            parents[adjacent] = currentVertex;
-                            distances[adjacent] = distances[currentVertex] + currentWeight;
-                            priorityQueue.push(make_pair(adjacent, distances[adjacent]));
-                        }
+                priorityQueue.pop();
+                unvisitedVertices[currentVertex] = true;
+
+                auto adjacentVertices = vertices[currentVertex];
+                for (auto adjacent : adjacentVertices) {
+
+                    if (unvisitedVertices[adjacent])
+                        continue;
+
+                    int tentativeGScore = gScore[currentVertex] + weights[make_pair(currentVertex, adjacent)];
+
+                    if (tentativeGScore <= gScore[adjacent]) {
+                        parents[adjacent] = currentVertex;
+                        gScore[adjacent] = tentativeGScore;
+                        fScore[adjacent] = tentativeGScore + heuristic[adjacent];
+                        priorityQueue.push(make_pair(adjacent, fScore[adjacent]));
                     }
                 }
             }
 
-            printSolution(vertex, distances, parents);
+            printSolution(vertexBegin, vertexEnd, gScore, parents);
         }
     }
 
@@ -131,47 +145,34 @@ private:
         cout << vertex << " ";
     }
 
-    void printSolution(int source, map<int, int> distances, map<int, int> parents) {
-        for (auto vertex: vertices) {
-            if (vertex.first != source) {
-                cout << source << "->" << vertex.first << " = " << distances[vertex.first] << " -> "
-                     << source << " ";
-                printPath(parents, vertex.first);
-                cout << endl;
-            }
-        }
+    void printSolution(int start, int end, map<int, int> distances, map<int, int> parents) {
+        cout << start << "->" << end << " = " << distances[end] << " -> "
+             << start << " ";
+        printPath(parents, end);
+        cout << endl;
     }
-
 
 };
 
 int main() {
     AdjacencyList list = AdjacencyList();
-    list.insertEdge(1, 2, 5);
-    list.insertEdge(1, 3, 5);
-    list.insertEdge(1, 4, 5);
-    list.insertEdge(2, 3, 5);
-    list.insertEdge(2, 5, 5);
-    list.insertEdge(2, 6, 5);
-    list.insertEdge(3, 4, 5);
-    list.insertEdge(3, 5, 5);
-    list.insertEdge(3, 8, 5);
-    list.insertEdge(4, 8, 5);
-    list.insertEdge(5, 6, 5);
-    list.insertEdge(5, 7, 5);
-    list.insertEdge(5, 8, 5);
-    list.insertEdge(6, 7, 5);
-    list.insertEdge(6, 9, 5);
-    list.insertEdge(7, 8, 5);
-    list.insertEdge(7, 9, 5);
-    list.insertEdge(7, 10, 5);
-    list.insertEdge(7, 11, 5);
-    list.insertEdge(8, 11, 5);
-    list.insertEdge(9, 11, 5);
-    list.insertEdge(11, 10, 5);
+    list.insertBidirectionalEdge(1, 2, 3);
+    list.insertBidirectionalEdge(1, 3, 1);
+    list.insertBidirectionalEdge(1, 4, 2);
+
+    list.insertBidirectionalEdge(5, 2, 4);
+    list.insertBidirectionalEdge(5, 3, 2);
+    list.insertBidirectionalEdge(5, 4, 2);
+
+    map<int, int> heuristic;
+    heuristic[1] = 2;
+    heuristic[2] = 4;
+    heuristic[3] = 1;
+    heuristic[4] = 2;
+    heuristic[5] = 0;
 
     high_resolution_clock::time_point start = high_resolution_clock::now();
-    list.dijkstra(1);
+    list.aStar(1, 5, heuristic);
     high_resolution_clock::time_point end = high_resolution_clock::now();
 
     auto duration = duration_cast<milliseconds>(end - start).count();
